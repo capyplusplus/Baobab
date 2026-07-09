@@ -5,8 +5,8 @@ import org.example.project.model.*
 import org.example.project.ui.*
 
 @Composable
-fun Desktop(folderList: List<Folder>) {
+fun Desktop(folderList: List<Folder>, camera: Camera) {
     for (folder in folderList) {
-        FolderCard(folder)
+        FolderCard(folder, camera)
     }
 }
