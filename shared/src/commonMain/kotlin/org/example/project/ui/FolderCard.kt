@@ -22,6 +22,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.isPrimaryPressed
+import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
@@ -39,6 +41,11 @@ const val fontSize = 20
 var selectedFolder:Folder? = null
 var pressedFolder:Folder? by mutableStateOf(null)
 
+var popupVisible by mutableStateOf(false)
+var popupPosition: Position by mutableStateOf(Position(0F, 0F))
+var desktopPopupVisible by mutableStateOf(false)
+var draggedFolder:Folder? = null
+
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun FolderCard(folder:Folder, camera:Camera) {
@@ -46,14 +53,10 @@ fun FolderCard(folder:Folder, camera:Camera) {
     var posX by remember { mutableStateOf(folder.position.x) }
     var posY by remember { mutableStateOf(folder.position.y) }
 
-    val bg = if (pressedFolder == folder) Color(0F, 200F, 255F, 0.3F) else Color(0, 0, 0, 1)
+    val bg = if (pressedFolder == folder) Color(0F, 0.5F, 1F, 0.3F) else Color(0, 0, 0, 1)
     Column(
         modifier = Modifier.offset((posX - camera.x).dp, (posY- camera.y).dp)
-            .size(cardSize.dp, cardSize.dp)
-            .clickable {
-                pressedFolder = folder
-                println("${folder.name} should be opened!")
-            }.onPointerEvent(PointerEventType.Enter) {
+            .onPointerEvent(PointerEventType.Enter) {
                 selectedFolder = folder
                 hovered = true
             }.onPointerEvent(PointerEventType.Exit) {
@@ -62,17 +65,39 @@ fun FolderCard(folder:Folder, camera:Camera) {
             }.pointerInput(Unit) {
                 detectDragGestures (
                     onDrag = { change, dragAmount ->
-                        if (hovered) {
-                            pressedFolder = null
+                        if (hovered || draggedFolder == folder) {
+                            popupVisible = false
+                            draggedFolder = folder
                             folder.position.x += dragAmount.x
                             folder.position.y += dragAmount.y
                             posX = folder.position.x
                             posY = folder.position.y
                         }
                         change.consume()
+                    },
+                    onDragEnd = {
+                        if (draggedFolder == folder) draggedFolder = null
+                    },
+                    onDragCancel = {
+                        if (draggedFolder == folder) draggedFolder = null
                     }
                 )
             }.background(bg, RoundedCornerShape(8.dp))
+            .onPointerEvent(PointerEventType.Press) { event ->
+                when {
+                    event.buttons.isSecondaryPressed -> {
+                        if (selectedFolder == folder) {
+                            pressedFolder = folder
+                            popupVisible = true
+                            desktopPopupVisible = false
+                            popupPosition = Position(posX, posY)
+                        }
+                    }
+                    event.buttons.isPrimaryPressed -> {
+                        pressedFolder = folder
+                    }
+                }
+        }
     ) {
         Image(
             painter = painterResource(Res.drawable.folder),
@@ -80,7 +105,7 @@ fun FolderCard(folder:Folder, camera:Camera) {
             modifier = Modifier.size(imageSize.dp, imageSize.dp)
                 .align(Alignment.CenterHorizontally)
         )
-        val folderName = if (hovered) ">${folder.name}<" else folder.name
+        val folderName = if (hovered) "> ${folder.name} <" else "   ${folder.name}   "
         Text(folderName, color = Color(255, 255, 255),
             fontSize = fontSize.sp,
             modifier = Modifier.align(Alignment.CenterHorizontally))
