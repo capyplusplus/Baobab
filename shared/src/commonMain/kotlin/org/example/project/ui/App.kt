@@ -15,6 +15,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import org.example.project.model.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Delay
@@ -28,6 +31,7 @@ val Folders = listOf<Folder>(
 
 var showLabel by mutableStateOf(true)
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 @Preview
 fun App() {
@@ -46,13 +50,20 @@ fun App() {
             modifier = Modifier
                 .fillMaxSize()
                 .safeContentPadding()
+                .onPointerEvent(PointerEventType.Press) {
+                    if (selectedFolder == null) {
+                        pressedFolder = null
+                    }
+                }
                 .pointerInput(Unit) {
                 detectDragGestures (
                     onDrag = { change, dragAmount ->
-                        camera = camera.copy(
-                            x = camera.x - dragAmount.x,
-                            y = camera.y - dragAmount.y
-                        )
+                        if (selectedFolder == null) {
+                            camera = camera.copy(
+                                x = camera.x - dragAmount.x,
+                                y = camera.y - dragAmount.y
+                            )
+                        }
 
                         change.consume()
                     }
