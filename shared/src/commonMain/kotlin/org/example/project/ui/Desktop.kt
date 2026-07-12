@@ -1,12 +1,15 @@
 package org.example.project.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import org.example.project.model.*
 import org.example.project.ui.*
 
 @Composable
 fun Desktop(folderList: List<Folder>, camera: Camera) {
     for (folder in folderList) {
-        FolderCard(folder, camera)
+        key(folder.id) {
+            FolderCard(folder, camera)
+        }
     }
 }

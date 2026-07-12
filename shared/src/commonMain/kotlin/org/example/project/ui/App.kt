@@ -1,6 +1,7 @@
 package org.example.project.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,13 +35,15 @@ import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 import androidx.compose.ui.geometry.Offset
 
-val Folders = listOf<Folder>(
-    Folder("Math", 1, Position(30F, 30F)),
-    Folder("Eng", 2, Position(200F, 100F))
+val Folders = mutableStateListOf(
+    Folder("Math", 0, Position(30F, 30F)),
+    Folder("Eng", 1, Position(200F, 100F))
 )
 
 var showLabel by mutableStateOf(true)
 var mousePosition by mutableStateOf(Offset(0F, 0F))
+
+var onDesktopPopup = false
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -66,7 +69,10 @@ fun App() {
                     when {
                         event.buttons.isPrimaryPressed -> {
                             popupVisible = false
-                            desktopPopupVisible = false
+                            if (!onDesktopPopup) {
+                                desktopPopupVisible = false
+                                println("removing dekstop popup")
+                            }
                             if (selectedFolder == null) pressedFolder = null
                         }
                         event.buttons.isSecondaryPressed -> {
@@ -74,7 +80,7 @@ fun App() {
                             if (selectedFolder == null) {
                                 popupVisible = false
                                 pressedFolder = null
-                                desktopPopupVisible = !desktopPopupVisible
+                                desktopPopupVisible = true
                             }
                         }
                     }
@@ -118,7 +124,19 @@ fun App() {
                 .visible(desktopPopupVisible)
                 .offset(mousePosition.x.dp, mousePosition.y.dp)
                 .background(Color(60, 60, 60), RoundedCornerShape(8.dp))
-                .padding(5.dp, 5.dp)) {
+                .padding(5.dp, 5.dp)
+                .onPointerEvent(PointerEventType.Enter) {
+                    println("on desktop popup now")
+                    onDesktopPopup = true
+                }.onPointerEvent(PointerEventType.Exit) {
+                    println("off desktop popup now")
+                    onDesktopPopup = false
+                }.clickable{
+                    Folders.add(Folders.size, Folder(
+                        "Unnamed ${Folders.size}", Folders.size,
+                        Position(mousePosition.x + camera.x, mousePosition.y + camera.y)))
+                    desktopPopupVisible = false
+                }) {
                 Text("New Baobab", color = Color(10, 230, 15), fontSize = 20.sp)
             }
         }
