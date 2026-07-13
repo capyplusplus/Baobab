@@ -8,7 +8,9 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.visible
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,6 +28,8 @@ import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import baobab.shared.generated.resources.Res
@@ -52,6 +56,7 @@ fun FolderCard(folder:Folder, camera:Camera) {
     var hovered by remember {mutableStateOf(false)}
     var posX by remember { mutableStateOf(folder.position.x) }
     var posY by remember { mutableStateOf(folder.position.y) }
+    var text by remember { mutableStateOf(folder.name) }
 
     val bg = if (pressedFolder == folder) Color(0F, 0.5F, 1F, 0.3F) else Color(0, 0, 0, 1)
     Column(
@@ -106,8 +111,18 @@ fun FolderCard(folder:Folder, camera:Camera) {
                 .align(Alignment.CenterHorizontally)
         )
         val folderName = if (hovered) "> ${folder.name} <" else "   ${folder.name}   "
-        Text(folderName, color = Color(255, 255, 255),
-            fontSize = fontSize.sp,
-            modifier = Modifier.align(Alignment.CenterHorizontally))
+        if (renamingFolder == folder) {
+            BasicTextField(value = text, textStyle = TextStyle(color = Color(200, 200, 200),
+                textAlign = TextAlign.Center, fontSize = fontSize.sp), enabled = (renamingFolder == folder),
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                onValueChange = {
+                    text = it
+                    folder.name = it
+                })
+        } else {
+            Text(folderName, color = Color(255, 255, 255),
+                fontSize = fontSize.sp,
+                modifier = Modifier.align(Alignment.CenterHorizontally))
+        }
     }
 }

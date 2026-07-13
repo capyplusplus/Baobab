@@ -2,6 +2,7 @@ package org.example.project.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.key.onKeyEvent
 
 val Folders = mutableStateListOf(
     Folder("Math", 0, Position(30F, 30F)),
@@ -44,6 +46,8 @@ var showLabel by mutableStateOf(true)
 var mousePosition by mutableStateOf(Offset(0F, 0F))
 
 var onDesktopPopup = false
+var onPopup = false
+var renamingFolder: Folder? by mutableStateOf(null)
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -68,12 +72,12 @@ fun App() {
                 .onPointerEvent(PointerEventType.Press) { event ->
                     when {
                         event.buttons.isPrimaryPressed -> {
-                            popupVisible = false
-                            if (!onDesktopPopup) {
-                                desktopPopupVisible = false
-                                println("removing dekstop popup")
+                            if (!onPopup) popupVisible = false
+                            if (!onDesktopPopup) desktopPopupVisible = false
+                            if (selectedFolder == null && !popupVisible) {
+                                pressedFolder = null
+                                renamingFolder = null
                             }
-                            if (selectedFolder == null) pressedFolder = null
                         }
                         event.buttons.isSecondaryPressed -> {
                             mousePosition = event.changes.first().position
@@ -81,6 +85,7 @@ fun App() {
                                 popupVisible = false
                                 pressedFolder = null
                                 desktopPopupVisible = true
+                                renamingFolder = null
                             }
                         }
                     }
@@ -114,9 +119,20 @@ fun App() {
                 .visible(popupVisible)
                 .offset(mousePosition.x.dp, mousePosition.y.dp)
                 .background(Color(60, 60, 60), RoundedCornerShape(8.dp))
+                .onPointerEvent(PointerEventType.Enter) {
+                    onPopup = true
+                }
+                .onPointerEvent(PointerEventType.Exit) {
+                    onPopup = false
+                }
                 .padding(5.dp, 5.dp)) {
                 Text("Open", color = Color(220, 230, 220), fontSize = 20.sp)
-                Text("Rename", color = Color(220, 220, 220), fontSize = 20.sp)
+                Text("Rename", color = Color(220, 220, 220), fontSize = 20.sp,
+                    modifier = Modifier.clickable{
+                        popupVisible = false
+                        renamingFolder = pressedFolder
+                        println("Renaming: ${renamingFolder?.name}")
+                    })
                 HorizontalDivider(thickness = 1.dp, color = Color.White, modifier = Modifier.width(80.dp))
                 Text("Delete", color = Color(255, 20, 20), fontSize = 20.sp)
             }
@@ -126,18 +142,17 @@ fun App() {
                 .background(Color(60, 60, 60), RoundedCornerShape(8.dp))
                 .padding(5.dp, 5.dp)
                 .onPointerEvent(PointerEventType.Enter) {
-                    println("on desktop popup now")
                     onDesktopPopup = true
                 }.onPointerEvent(PointerEventType.Exit) {
-                    println("off desktop popup now")
                     onDesktopPopup = false
-                }.clickable{
-                    Folders.add(Folders.size, Folder(
-                        "Unnamed ${Folders.size}", Folders.size,
-                        Position(mousePosition.x + camera.x, mousePosition.y + camera.y)))
-                    desktopPopupVisible = false
                 }) {
-                Text("New Baobab", color = Color(10, 230, 15), fontSize = 20.sp)
+                Text("New Baobab", color = Color(10, 230, 15), fontSize = 20.sp,
+                    modifier = Modifier.clickable{
+                        Folders.add(Folders.size, Folder(
+                            "Unnamed ${Folders.size}", Folders.size,
+                            Position(mousePosition.x + camera.x, mousePosition.y + camera.y)))
+                        desktopPopupVisible = false
+                    })
             }
         }
     }
