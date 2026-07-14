@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.visible
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -110,7 +111,7 @@ fun FolderCard(folder:Folder, camera:Camera) {
                         pressedFolder = folder
                     }
                 }
-        }
+        }.padding(8.dp, 4.dp)
     ) {
         Image(
             painter = painterResource(Res.drawable.folder),
