@@ -58,7 +58,15 @@ fun FolderCard(folder:Folder, camera:Camera) {
     var posY by remember { mutableStateOf(folder.position.y) }
     var text by remember { mutableStateOf(folder.name) }
 
-    val bg = if (pressedFolder == folder) Color(0F, 0.5F, 1F, 0.3F) else Color(0, 0, 0, 1)
+    val bg:Color
+    if (pressedFolder == folder) {
+        bg = Color(0F, 0.5F, 1F, 0.3F)
+    } else if (hovered) {
+        bg = Color(0.5F, 0.5F, 0.5F, 0.2F)
+    } else {
+        bg = Color(0, 0, 0, 1)
+    }
+
     Column(
         modifier = Modifier.offset((posX - camera.x).dp, (posY- camera.y).dp)
             .onPointerEvent(PointerEventType.Enter) {
@@ -110,7 +118,7 @@ fun FolderCard(folder:Folder, camera:Camera) {
             modifier = Modifier.size(imageSize.dp, imageSize.dp)
                 .align(Alignment.CenterHorizontally)
         )
-        val folderName = if (hovered) "> ${folder.name} <" else "   ${folder.name}   "
+        val folderName = "   ${folder.name}   "
         if (renamingFolder == folder) {
             BasicTextField(value = text, textStyle = TextStyle(color = Color(200, 200, 200),
                 textAlign = TextAlign.Center, fontSize = fontSize.sp), enabled = (renamingFolder == folder),
