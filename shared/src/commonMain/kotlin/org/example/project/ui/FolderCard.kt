@@ -118,7 +118,7 @@ fun FolderCard(folder:Folder, camera:Camera) {
             modifier = Modifier.size(imageSize.dp, imageSize.dp)
                 .align(Alignment.CenterHorizontally)
         )
-        val folderName = "   ${folder.name}   "
+        val folderName = folder.name
         if (renamingFolder == folder) {
             BasicTextField(value = text, textStyle = TextStyle(color = Color(200, 200, 200),
                 textAlign = TextAlign.Center, fontSize = fontSize.sp), enabled = (renamingFolder == folder),
@@ -130,6 +130,7 @@ fun FolderCard(folder:Folder, camera:Camera) {
         } else {
             Text(folderName, color = Color(255, 255, 255),
                 fontSize = fontSize.sp,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.CenterHorizontally))
         }
     }
