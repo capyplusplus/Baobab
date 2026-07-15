@@ -100,7 +100,7 @@ fun FolderCard(folder:Folder, camera:Camera) {
             .onPointerEvent(PointerEventType.Press) { event ->
                 when {
                     event.buttons.isSecondaryPressed -> {
-                        if (selectedFolder == folder) {
+                        if (selectedFolder == folder && aboutToDeleteFolder == null) {
                             pressedFolder = folder
                             popupVisible = true
                             desktopPopupVisible = false

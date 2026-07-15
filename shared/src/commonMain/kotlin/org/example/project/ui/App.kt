@@ -1,6 +1,7 @@
 package org.example.project.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.visible
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,7 +38,9 @@ import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.text.style.TextAlign
 
+var nextId:Long = 2
 val Folders = mutableStateListOf(
     Folder("Math", 0, Position(30F, 30F)),
     Folder("Eng", 1, Position(200F, 100F))
@@ -44,6 +48,8 @@ val Folders = mutableStateListOf(
 
 var showLabel by mutableStateOf(true)
 var mousePosition by mutableStateOf(Offset(0F, 0F))
+
+var aboutToDeleteFolder:Folder? by mutableStateOf(null)
 
 var onDesktopPopup = false
 var onPopup = false
@@ -72,20 +78,24 @@ fun App() {
                 .onPointerEvent(PointerEventType.Press) { event ->
                     when {
                         event.buttons.isPrimaryPressed -> {
-                            if (!onPopup) popupVisible = false
-                            if (!onDesktopPopup) desktopPopupVisible = false
-                            if (selectedFolder == null && !popupVisible) {
-                                pressedFolder = null
-                                renamingFolder = null
+                            if (aboutToDeleteFolder == null) {
+                                if (!onPopup) popupVisible = false
+                                if (!onDesktopPopup) desktopPopupVisible = false
+                                if (selectedFolder == null && !popupVisible) {
+                                    pressedFolder = null
+                                    renamingFolder = null
+                                }
                             }
                         }
                         event.buttons.isSecondaryPressed -> {
                             mousePosition = event.changes.first().position
-                            if (selectedFolder == null) {
-                                popupVisible = false
-                                pressedFolder = null
-                                desktopPopupVisible = true
-                                renamingFolder = null
+                            if (aboutToDeleteFolder == null) {
+                                if (selectedFolder == null) {
+                                    popupVisible = false
+                                    pressedFolder = null
+                                    desktopPopupVisible = true
+                                    renamingFolder = null
+                                }
                             }
                         }
                     }
@@ -115,6 +125,36 @@ fun App() {
                 color = Color(200, 200, 200),
                 modifier = Modifier.align(Alignment.BottomCenter)
                     .visible(showLabel))
+
+            Box(modifier = Modifier
+                .visible(aboutToDeleteFolder != null)
+                .align(Alignment.Center)
+                .background(Color(0.05F, 0.05F, 0.05F, 1F), shape = RoundedCornerShape(8.dp))
+                .border(2.dp, Color(255, 120, 120), shape = RoundedCornerShape(8.dp))
+                .size(375.dp, 150.dp)
+                .padding(5.dp)
+            ) {
+                Text("Do you want to delete ${aboutToDeleteFolder?.name}?",
+                    color = Color(255, 120, 120),
+                    fontSize = 23.sp,
+                    modifier = Modifier.align(Alignment.TopCenter).offset(0.dp, (15).dp), textAlign = TextAlign.Center)
+                Text("Delete",
+                    color = Color(255, 255, 255),
+                    fontSize = 17.sp,
+                    modifier = Modifier.align(Alignment.BottomStart).offset(25.dp,(-15).dp)
+                        .clickable{
+                            Folders.remove(aboutToDeleteFolder)
+                            aboutToDeleteFolder = null
+                        })
+                Text("Cancel",
+                    color = Color(255, 255, 255),
+                    fontSize = 17.sp,
+                    modifier = Modifier.align(Alignment.BottomEnd).offset((-25).dp, (-15).dp)
+                        .clickable{
+                            aboutToDeleteFolder = null
+                        })
+            }
+
             Column(modifier = Modifier // Folder popup
                 .visible(popupVisible)
                 .offset(mousePosition.x.dp, mousePosition.y.dp)
@@ -134,7 +174,12 @@ fun App() {
                         println("Renaming: ${renamingFolder?.name}")
                     })
                 HorizontalDivider(thickness = 1.dp, color = Color.White, modifier = Modifier.width(80.dp))
-                Text("Delete", color = Color(255, 20, 20), fontSize = 20.sp)
+                Text("Delete", color = Color(255, 20, 20), fontSize = 20.sp,
+                    modifier = Modifier.clickable{
+                        aboutToDeleteFolder = pressedFolder
+                        popupVisible = false
+                        println("Deleting: ${aboutToDeleteFolder?.name}")
+                    })
             }
             Column(modifier = Modifier // Desktop popup
                 .visible(desktopPopupVisible)
@@ -149,9 +194,10 @@ fun App() {
                 Text("New Baobab", color = Color(10, 230, 15), fontSize = 20.sp,
                     modifier = Modifier.clickable{
                         Folders.add(Folders.size, Folder(
-                            "Unnamed ${Folders.size}", Folders.size,
+                            "Unnamed ${Folders.size}", nextId.toInt(),
                             Position(mousePosition.x + camera.x, mousePosition.y + camera.y)))
                         desktopPopupVisible = false
+                        nextId++
                     })
             }
         }
