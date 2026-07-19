@@ -11,4 +11,5 @@ object UIColors {
     val selected = Color(0F, 0.5F, 1F, 0.3F)
     val hovered = Color(0.5F, 0.5F, 0.5F, 0.2F)
     val background = Color(30, 30, 30)
+    val deleting = Color(1F, 0.45F, 0.45F, 0.5F)
 }

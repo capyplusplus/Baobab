@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
@@ -42,24 +41,24 @@ object Modifiers {
 
     @OptIn(ExperimentalComposeUiApi::class)
     fun desktopPopup() = Modifier
-        .offset(mousePosition.x.dp, mousePosition.y.dp)
+        .offset(AppState.mousePosition.x.dp, AppState.mousePosition.y.dp)
         .background(UIColors.frame, RoundedCornerShape(8.dp))
         .padding(5.dp, 5.dp)
         .onPointerEvent(PointerEventType.Enter) {
-            onDesktopPopup = true
+            AppState.onDesktopPopup = true
         }.onPointerEvent(PointerEventType.Exit) {
-            onDesktopPopup = false
+            AppState.onDesktopPopup = false
         }
 
     @OptIn(ExperimentalComposeUiApi::class)
     fun folderPopup() = Modifier // Folder popup
-        .offset(mousePosition.x.dp, mousePosition.y.dp)
+        .offset(AppState.mousePosition.x.dp, AppState.mousePosition.y.dp)
         .background(UIColors.frame, RoundedCornerShape(8.dp))
         .onPointerEvent(PointerEventType.Enter) {
-            onFolderPopup = true
+            AppState.onFolderPopup = true
         }
         .onPointerEvent(PointerEventType.Exit) {
-            onFolderPopup = false
+            AppState.onFolderPopup = false
         }
         .padding(5.dp, 5.dp)
 
@@ -76,28 +75,24 @@ object Modifiers {
     fun BoxScope.cancelDelete():Modifier {
         return Modifier.align(Alignment.BottomEnd).offset((-25).dp, (-15).dp)
             .clickable {
-                deletingFolder = null
+                AppState.deletingFolder?.states?.deleting = false
+                AppState.deletingFolder = null
             }
     }
 
     @OptIn(ExperimentalComposeUiApi::class)
-    fun folder(states: FolderStates, folder: Folder): Modifier {
-        val bg:Color = if (pressedFolder == folder) UIColors.selected
-                        else if (states.hovered) UIColors.hovered
+    fun folder(folder: Folder): Modifier {
+        val bg:Color =  if (folder.states.deleting) UIColors.deleting
+                        else if (folder.states.pressed) UIColors.selected
+                        else if (folder.states.hovered) UIColors.hovered
                         else Color.Transparent
 
-        return Modifier.offset((folder.position.x - camera.x).dp, (folder.position.y - camera.y).dp)
-            .onPointerEvent(PointerEventType.Enter) {
-                selectedFolder = folder
-                states.hovered = true
-            }.onPointerEvent(PointerEventType.Exit) {
-                selectedFolder = null
-                states.hovered = false
-            }.pointerInput(Unit) {
-                Drags.run { dragFolder(folder, states) }
-            }.background(bg, RoundedCornerShape(8.dp))
-            .onPointerEvent(PointerEventType.Press) { event ->
-                Clicks.folderClick(event, folder, states)
-            }.padding(8.dp, 4.dp)
+        return Modifier.offset((folder.position.x - AppState.camera.x).dp, (folder.position.y - AppState.camera.y).dp)
+            .onPointerEvent(PointerEventType.Enter) { folder.hover() }
+            .onPointerEvent(PointerEventType.Exit) { folder.unhover() }
+            .pointerInput(Unit) { Drags.run { dragFolder(folder) } }
+            .background(bg, RoundedCornerShape(8.dp))
+            .onPointerEvent(PointerEventType.Press) { event -> Clicks.folderClick(event, folder) }
+            .padding(8.dp, 4.dp)
     }
 }

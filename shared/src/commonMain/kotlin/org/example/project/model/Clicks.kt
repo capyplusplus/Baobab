@@ -5,69 +5,73 @@ import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.isSecondaryPressed
+import org.example.project.ui.App
 import org.example.project.ui.nextId
 
 object Clicks {
     fun newBaobab() {
-        Folders.add(Folders.size, Folder(
-            "Unnamed ${Folders.size}", nextId.toInt(),
-            Position(mousePosition.x + camera.x, mousePosition.y + camera.y)))
-        desktopPopupVisible = false
+        AppState.Folders.add(AppState.Folders.size, Folder(
+            "Unnamed ${AppState.Folders.size}", nextId.toInt(),
+            Position(AppState.mousePosition.x + AppState.camera.x, AppState.mousePosition.y + AppState.camera.y)))
+        AppState.desktopPopupVisible = false
         nextId++
     }
 
     fun openDeleteFrame() {
-        deletingFolder = pressedFolder
-        folderPopupVisible = false
+        AppState.pressedFolder?.deleteQuery()
+        AppState.folderPopupVisible = false
     }
 
     fun renameFolder() {
-        folderPopupVisible = false
-        renamingFolder = pressedFolder
+        AppState.folderPopupVisible = false
+        AppState.pressedFolder?.rename()
     }
 
     fun deleteFolder() {
-        Folders.remove(deletingFolder)
-        deletingFolder = null
+        AppState.Folders.remove(AppState.deletingFolder)
+        AppState.deletingFolder = null
     }
 
     fun mainDesktopClicks(event: PointerEvent) {
         when {
             event.buttons.isPrimaryPressed -> {
-                if (deletingFolder == null) {
-                    if (!onFolderPopup) folderPopupVisible = false
-                    if (!onDesktopPopup) desktopPopupVisible = false
-                    if (selectedFolder == null && !folderPopupVisible) {
-                        pressedFolder = null
-                        renamingFolder = null
+                if (AppState.deletingFolder == null) {
+                    if (!AppState.onFolderPopup) AppState.folderPopupVisible = false
+                    if (!AppState.onDesktopPopup) AppState.desktopPopupVisible = false
+                    if (AppState.hoveredFolder == null && !AppState.folderPopupVisible) {
+                        if (AppState.pressedFolder != null) AppState.pressedFolder?.unpress()
+
+                        AppState.renamingFolder?.remameEnd()
                     }
                 }
             }
             event.buttons.isSecondaryPressed -> {
-                mousePosition = event.changes.first().position
-                if (deletingFolder == null && selectedFolder == null) {
-                    folderPopupVisible = false
-                    pressedFolder = null
-                    renamingFolder = null
+                AppState.mousePosition = event.changes.first().position
+                if (AppState.deletingFolder == null && AppState.hoveredFolder == null) {
+                    AppState.folderPopupVisible = false
+                    if (AppState.pressedFolder != null) AppState.pressedFolder?.unpress()
 
-                    desktopPopupVisible = true
+                    AppState.renamingFolder?.remameEnd()
+
+                    AppState.desktopPopupVisible = true
                 }
             }
         }
     }
 
-    fun folderClick(event: PointerEvent, folder:Folder, states: FolderStates) {
+    fun folderClick(event: PointerEvent, folder:Folder) {
         when {
             event.buttons.isSecondaryPressed -> {
-                if (selectedFolder == folder && deletingFolder == null) {
-                    pressedFolder = folder
-                    folderPopupVisible = true
-                    desktopPopupVisible = false
-                    folderPopupPosition = Position(folder.position.x, folder.position.y)
+                if (folder.states.hovered && AppState.deletingFolder == null) {
+                    folder.press()
+
+                    AppState.folderPopupPosition = Position(folder.position.x, folder.position.y)
+                    AppState.folderPopupVisible = true
+                    AppState.desktopPopupVisible = false
                 }
             }
             event.buttons.isPrimaryPressed -> {
-                if (deletingFolder == null) pressedFolder = folder
+                if (AppState.deletingFolder == null) folder.press()
             }
         }
     }
@@ -78,23 +82,25 @@ object Drags {
     suspend fun PointerInputScope.dragDesktop() {
         detectDragGestures (
             onDrag = { change, dragAmount ->
-                desktopPopupVisible = false
-                if (selectedFolder == null) {
-                    camera = camera.copy(
-                        x = camera.x - dragAmount.x,
-                        y = camera.y - dragAmount.y
+                AppState.desktopPopupVisible = false
+                if (AppState.hoveredFolder == null) {
+                    AppState.camera = AppState.camera.copy(
+                        x = AppState.camera.x - dragAmount.x,
+                        y = AppState.camera.y - dragAmount.y
                     )
                 }
                 change.consume()
             }
         )
     }
-    suspend fun PointerInputScope.dragFolder(folder:Folder, states: FolderStates) {
+    suspend fun PointerInputScope.dragFolder(folder:Folder) {
         detectDragGestures (
             onDrag = { change, dragAmount ->
-                if (states.hovered || draggedFolder == folder) {
-                    folderPopupVisible = false
-                    draggedFolder = folder
+                if (folder.states.hovered || AppState.draggedFolder == folder) {
+                    AppState.folderPopupVisible = false
+                    AppState.draggedFolder = folder
+
+                    folder.press()
 
                     val newX = folder.position.x + dragAmount.x
                     val newY = folder.position.y + dragAmount.y
@@ -103,10 +109,10 @@ object Drags {
                 change.consume()
             },
             onDragEnd = {
-                if (draggedFolder == folder) draggedFolder = null
+                if (AppState.draggedFolder == folder) AppState.draggedFolder = null
             },
             onDragCancel = {
-                if (draggedFolder == folder) draggedFolder = null
+                if (AppState.draggedFolder == folder) AppState.draggedFolder = null
             }
         )
     }

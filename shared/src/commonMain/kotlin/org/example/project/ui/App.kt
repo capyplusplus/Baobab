@@ -35,7 +35,7 @@ fun BoxScope.MutedText() {
         fontSize = FontSize.huge,
         color = UIColors.muted,
         modifier = Modifier.align(Alignment.BottomCenter)
-            .visible(showLabel))
+            .visible(AppState.showLabel))
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -60,7 +60,7 @@ fun BoxScope.DesktopPopup() {
 @Composable
 fun BoxScope.DeleteFrame() {
     Box(modifier = Modifiers.deleteFrame.align(Alignment.Center)) {
-        Text("Do you want to delete ${deletingFolder?.name}?",
+        Text("Do you want to delete ${AppState.deletingFolder?.name}?",
             color = UIColors.danger,
             fontSize = FontSize.big,
             modifier = Modifier.align(Alignment.TopCenter).offset(0.dp, (15).dp), textAlign = TextAlign.Center)
@@ -78,15 +78,13 @@ fun BoxScope.DeleteFrame() {
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MainDesktop() {
-    Box (
-        modifier = Modifiers.mainDesktop
-    ) {
-        Desktop(Folders)
+    Box (modifier = Modifiers.mainDesktop) {
+        Desktop(AppState.Folders)
         MutedText()
 
-        if (deletingFolder != null) DeleteFrame()
-        if (folderPopupVisible) FolderPopup()
-        if (desktopPopupVisible) DesktopPopup()
+        if (AppState.deletingFolder != null) DeleteFrame()
+        if (AppState.folderPopupVisible) FolderPopup()
+        if (AppState.desktopPopupVisible) DesktopPopup()
     }
 }
 
@@ -96,7 +94,7 @@ fun MainDesktop() {
 fun App() {
     LaunchedEffect(Unit) {
         delay(5000.milliseconds)
-        showLabel = false
+        AppState.showLabel = false
     }
 
     Surface(modifier = Modifier.fillMaxSize(),

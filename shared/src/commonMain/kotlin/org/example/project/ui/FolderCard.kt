@@ -44,7 +44,7 @@ fun ColumnScope.FolderName(folder: Folder) {
 @Composable
 fun ColumnScope.FolderRename(folder: Folder) {
     BasicTextField(value = folder.name, textStyle = TextStyle(color = UIColors.muted,
-        textAlign = TextAlign.Center, fontSize = FontSize.big), enabled = (renamingFolder == folder),
+        textAlign = TextAlign.Center, fontSize = FontSize.big),
         modifier = Modifier.align(Alignment.CenterHorizontally),
         onValueChange = {
             folder.name = it
@@ -56,10 +56,10 @@ fun ColumnScope.FolderRename(folder: Folder) {
 fun FolderCard(folder:Folder) {
     val states = folder.states
 
-    Column(modifier = Modifiers.folder(states, folder)) {
+    Column(modifier = Modifiers.folder(folder)) {
         FolderIcon()
 
-        if (renamingFolder == folder) FolderRename(folder)
+        if (folder.states.renamed) FolderRename(folder)
         else FolderName(folder)
     }
 }
