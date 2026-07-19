@@ -25,10 +25,11 @@ object AppState {
     var onDesktopPopup = false // var tells whether mouse if on desktop popup (RMB click on desktop) or not
     var onFolderPopup = false // var tells whether mouse is on folder popup (RMB click on folder) or not
 
-    val Folders = mutableStateListOf(                                // main baobabs list
-        Folder("Math", 0, Position(30F, 30F)),
-        Folder("Eng", 1, Position(200F, 100F))
+    // main baobabs list
+    val Folders: MutableList<Folder> = mutableStateListOf(
     )
+
+    var nextId:Long = 2
 }
 
 class FolderState(folder: Folder) {

@@ -24,8 +24,6 @@ import kotlin.time.Duration.Companion.milliseconds
 import androidx.compose.ui.text.style.TextAlign
 import org.example.project.theme.*
 
-var nextId:Long = 2
-
 @Composable
 fun BoxScope.MutedText() {
     Text("Baobab\nv 0.1",

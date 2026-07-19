@@ -5,16 +5,14 @@ import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.isSecondaryPressed
-import org.example.project.ui.App
-import org.example.project.ui.nextId
 
 object Clicks {
     fun newBaobab() {
         AppState.Folders.add(AppState.Folders.size, Folder(
-            "Unnamed ${AppState.Folders.size}", nextId.toInt(),
+            "Unnamed ${AppState.Folders.size}", AppState.nextId.toInt(),
             Position(AppState.mousePosition.x + AppState.camera.x, AppState.mousePosition.y + AppState.camera.y)))
         AppState.desktopPopupVisible = false
-        nextId++
+        AppState.nextId++
     }
 
     fun openDeleteFrame() {
