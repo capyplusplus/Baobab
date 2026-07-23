@@ -3,13 +3,12 @@ package org.example.project.model
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import org.example.project.ui.App
 
 class Folder(name:String, id:Int, position: Position) {
     var name by mutableStateOf(name)
     var id by mutableStateOf(id)
     var position by mutableStateOf(position)
-    var states = FolderState(this)
+    var states = FolderState()
 
     fun hover() {
         this.states.hovered = true
@@ -41,7 +40,7 @@ class Folder(name:String, id:Int, position: Position) {
         AppState.deletingFolder = this
     }
 
-    fun remameEnd() {
+    fun renameEnd() {
         AppState.renamingFolder = null
         this.states.renamed = false
     }

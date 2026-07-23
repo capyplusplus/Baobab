@@ -9,5 +9,5 @@ object FontSize {
 }
 
 object ObjectSize {
-    val folderIcon = 50F
+    const val FOLDERICON = 50F
 }

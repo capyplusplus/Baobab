@@ -19,7 +19,6 @@ import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import org.example.project.model.*
 import org.example.project.theme.UIColors
 
 object Modifiers {

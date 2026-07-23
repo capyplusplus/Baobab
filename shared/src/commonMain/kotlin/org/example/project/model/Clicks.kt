@@ -39,7 +39,7 @@ object Clicks {
                     if (AppState.hoveredFolder == null && !AppState.folderPopupVisible) {
                         if (AppState.pressedFolder != null) AppState.pressedFolder?.unpress()
 
-                        AppState.renamingFolder?.remameEnd()
+                        AppState.renamingFolder?.renameEnd()
                     }
                 }
             }
@@ -49,7 +49,7 @@ object Clicks {
                     AppState.folderPopupVisible = false
                     if (AppState.pressedFolder != null) AppState.pressedFolder?.unpress()
 
-                    AppState.renamingFolder?.remameEnd()
+                    AppState.renamingFolder?.renameEnd()
 
                     AppState.desktopPopupVisible = true
                 }

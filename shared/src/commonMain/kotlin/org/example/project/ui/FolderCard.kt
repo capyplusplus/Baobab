@@ -8,12 +8,10 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import baobab.shared.generated.resources.Res
 import baobab.shared.generated.resources.folder
 import org.example.project.model.Folder
@@ -28,7 +26,7 @@ fun ColumnScope.FolderIcon() {
     Image(
         painter = painterResource(Res.drawable.folder),
         contentDescription = "Folder",
-        modifier = Modifier.size(ObjectSize.folderIcon.dp)
+        modifier = Modifier.size(ObjectSize.FOLDERICON.dp)
             .align(Alignment.CenterHorizontally)
     )
 }
@@ -51,11 +49,8 @@ fun ColumnScope.FolderRename(folder: Folder) {
         })
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun FolderCard(folder:Folder) {
-    val states = folder.states
-
     Column(modifier = Modifiers.folder(folder)) {
         FolderIcon()
 

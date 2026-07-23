@@ -32,11 +32,10 @@ object AppState {
     var nextId:Long = 2
 }
 
-class FolderState(folder: Folder) {
+class FolderState {
     var hovered by mutableStateOf(false)
     var renamed by mutableStateOf(false)
     var pressed by mutableStateOf(false)
     var deleting by mutableStateOf(false)
-    var dragging = false
 }
 

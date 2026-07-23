@@ -1,7 +1,6 @@
 package org.example.project
 
 import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowScope
 import androidx.compose.ui.window.application
 import org.example.project.model.JsonSystem
 import org.example.project.ui.App

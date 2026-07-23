@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import org.example.project.model.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
@@ -36,9 +35,8 @@ fun BoxScope.MutedText() {
             .visible(AppState.showLabel))
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun BoxScope.FolderPopup() {
+fun FolderPopup() {
     Column(modifier = Modifiers.folderPopup()) {
         Text("Open", color = UIColors.primary, fontSize = FontSize.big)
         Text("Rename", color = UIColors.primary, fontSize = FontSize.big, modifier = Modifiers.renameFolder)
@@ -47,9 +45,8 @@ fun BoxScope.FolderPopup() {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun BoxScope.DesktopPopup() {
+fun DesktopPopup() {
     Column(modifier = Modifiers.desktopPopup()) {
         Text("New Baobab", color = UIColors.confirm, fontSize = FontSize.big, modifier = Modifiers.newBaobab)
     }
@@ -73,7 +70,6 @@ fun BoxScope.DeleteFrame() {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MainDesktop() {
     Box (modifier = Modifiers.mainDesktop) {
@@ -86,7 +82,6 @@ fun MainDesktop() {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 @Preview
 fun App() {
