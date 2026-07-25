@@ -6,10 +6,11 @@ import org.example.project.model.JsonSystem
 import org.example.project.ui.App
 
 fun main() = application {
-    JsonSystem.load("Folders")
+    JsonSystem.loadFolders()
+    JsonSystem.loadCamera()
     Window(
         onCloseRequest = {
-            JsonSystem.save("Folders")
+            JsonSystem.save()
             exitApplication()
         },
         title = "Baobab",

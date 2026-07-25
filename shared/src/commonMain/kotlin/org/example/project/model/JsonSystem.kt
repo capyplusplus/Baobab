@@ -3,9 +3,14 @@ package org.example.project.model
 import java.io.File
 import kotlinx.serialization.json.*
 
+object Paths {
+    const val FOLDERS = "Folders"
+    const val CAMERA = "Camera"
+}
+
 object JsonSystem {
 
-    fun save(path: String) {
+    fun save() {
         val root = buildJsonObject {
             put("nextId", AppState.nextId)
 
@@ -25,12 +30,19 @@ object JsonSystem {
                 }
             }
         }
-
-        File(path).writeText(root.toString())
+        File(Paths.FOLDERS).writeText(root.toString())
+        File(Paths.CAMERA).writeText("${AppState.camera.x},${AppState.camera.y}")
     }
 
-    fun load(path: String) {
-        val file = File(path)
+    fun loadCamera() {
+        val file = File(Paths.CAMERA)
+        val pos = file.readText()
+        val vars = pos.split(',')
+        AppState.camera = Camera(vars[0].toFloat(), vars[1].toFloat())
+    }
+
+    fun loadFolders() {
+        val file = File(Paths.FOLDERS)
 
         if (!file.exists()) return
 
