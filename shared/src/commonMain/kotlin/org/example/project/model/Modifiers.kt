@@ -64,6 +64,7 @@ object Modifiers {
     val newBaobab = justClick { Clicks.newBaobab() }
     val openDeleteFrame = justClick { Clicks.openDeleteFrame() }
     val renameFolder = justClick { Clicks.renameFolder() }
+    val openFolder = justClick { Clicks.openFolder() }
 
     @Composable
     fun BoxScope.deleteFolder():Modifier {

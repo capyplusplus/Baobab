@@ -15,6 +15,7 @@ object AppState {
     var deletingFolder:Folder? by mutableStateOf(null) // folder, which user wants to delete, and clicked "delete" on it
     var renamingFolder: Folder? by mutableStateOf(null) // folder, which is about to be renamed
     var draggedFolder:Folder? = null // folder which is dragged
+    var openedFolder:Folder? by mutableStateOf(null) // opened Folder
 
     var folderPopupVisible by mutableStateOf(false) // should folder popup be on the screen
     var folderPopupPosition: Position by mutableStateOf(Position(0F, 0F)) // stores where should folder popup be
@@ -29,7 +30,7 @@ object AppState {
     val Folders: MutableList<Folder> = mutableStateListOf(
     )
 
-    var nextId:Long = 2
+    var nextId:Long = 0
 }
 
 class FolderState {

@@ -2,6 +2,7 @@ package org.example.project.model
 
 import java.io.File
 import kotlinx.serialization.json.*
+import kotlin.math.max
 
 object Paths {
     const val FOLDERS = "Folders"
@@ -66,6 +67,7 @@ object JsonSystem {
                     )
                 )
             )
+            AppState.nextId = max(AppState.nextId, obj["id"]!!.jsonPrimitive.long + 1)
         }
     }
 }

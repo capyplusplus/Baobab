@@ -20,6 +20,11 @@ object Clicks {
         AppState.folderPopupVisible = false
     }
 
+    fun openFolder() {
+        AppState.openedFolder = AppState.pressedFolder
+        AppState.folderPopupVisible = false
+    }
+
     fun renameFolder() {
         AppState.folderPopupVisible = false
         AppState.pressedFolder?.rename()

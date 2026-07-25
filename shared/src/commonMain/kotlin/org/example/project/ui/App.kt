@@ -38,7 +38,7 @@ fun BoxScope.MutedText() {
 @Composable
 fun FolderPopup() {
     Column(modifier = Modifiers.folderPopup()) {
-        Text("Open", color = UIColors.primary, fontSize = FontSize.big)
+        Text("Open", modifier = Modifiers.openFolder, color = UIColors.primary, fontSize = FontSize.big)
         Text("Rename", color = UIColors.primary, fontSize = FontSize.big, modifier = Modifiers.renameFolder)
         HorizontalDivider(thickness = 1.dp, color = Color.White, modifier = Modifier.width(80.dp))
         Text("Delete", color = UIColors.danger, fontSize = FontSize.big, modifier = Modifiers.openDeleteFrame)
@@ -92,7 +92,10 @@ fun App() {
 
     Surface(modifier = Modifier.fillMaxSize(),
             color = UIColors.background) {
-        MainDesktop()
+        if (AppState.openedFolder == null) MainDesktop()
+        else {
+
+        }
     }
 }
 
